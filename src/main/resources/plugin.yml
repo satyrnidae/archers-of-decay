@@ -1,0 +1,19 @@
+name: ArchersOfDecay
+version: '${project.version}'
+main: dev.satyrn.archersofdecay.ArchersOfDecay
+api-version: 1.18
+prefix: Archers of Decay
+authors: [ satyrnidae ]
+description: Changes nether-spawned skeletons into wither skeleton archers!
+website: https://satyrn.dev/sites/archers-of-decay
+commands:
+  archersofdecay:
+    description: Manages the plugin config and displays information about the plugin.
+    usage: /<command>
+    aliases:
+      - aod
+      - archers
+permissions:
+  archersofdecay.admin:
+    default: op
+    description: Allows a user to reload the plugin's configuration file.
