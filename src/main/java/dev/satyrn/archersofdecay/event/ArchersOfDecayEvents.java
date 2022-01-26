@@ -4,13 +4,11 @@ import dev.satyrn.archersofdecay.configuration.Configuration;
 import dev.satyrn.papermc.api.util.v2.Cast;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.WitherSkeleton;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -141,18 +139,10 @@ public class ArchersOfDecayEvents implements Listener {
         }
     }
 
-    /**
-     * Occurs when a wither skeleton dies. Drops a number of arrows if the skeleton was holding a bow.
-     * @param event The event.
-     */
     @EventHandler
     public void onWitherSkeletonDeath(final @NotNull EntityDeathEvent event) {
-        // Only handle wither skeleton death events.
-        if (event.getEntity().getType() != EntityType.WITHER_SKELETON) {
-            return;
-        }
-        // Do nothing if we don't drop arrows.
-        if (!this.configuration.dropArrows.value()) {
+        // We won't handle the event if drop arrows is disabled or the entity killed was not a wither skeleton.
+        if (!this.configuration.dropArrows.value() || event.getEntity().getType() != EntityType.WITHER_SKELETON) {
             return;
         }
 
@@ -161,27 +151,77 @@ public class ArchersOfDecayEvents implements Listener {
         if (witherSkeletonEquipment.getItemInMainHand().getType() == Material.BOW) {
             int arrowsToDrop = (int) Math.floor(Math.random() * 3);
             if (arrowsToDrop > 0) {
-                final ItemStack arrows;
-                int duration = configuration.arrowsOfDecay.duration.value(event.getEntity().getWorld().getDifficulty());
-                int effectLevel = configuration.arrowsOfDecay.effectLevel.value(event.getEntity()
-                        .getWorld()
-                        .getDifficulty());
-
-                if (this.configuration.arrowsOfDecay.enabled.value() && duration > 0 && effectLevel >= 0) {
-                    arrows = new ItemStack(Material.TIPPED_ARROW, arrowsToDrop);
-                    if (arrows.getItemMeta() instanceof final PotionMeta potionMeta) {
-                        potionMeta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE));
-                        potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.WITHER, duration, effectLevel), true);
-                        potionMeta.setColor(Color.BLACK);
-                        arrows.setItemMeta(potionMeta);
-                    }
-                } else {
-                    arrows = new ItemStack(Material.TIPPED_ARROW, arrowsToDrop);
-                }
                 this.plugin.getLogger()
-                        .log(Level.FINER, "[Events] Dropped arrows from wither skeleton at x:{0}, y:{1}, z:{2} in world {3}", new Object[]{witherSkeleton.getLocation().getX(), witherSkeleton.getLocation().getY(), witherSkeleton.getLocation().getZ(), witherSkeleton.getWorld().getName()});
-                witherSkeleton.getWorld().dropItemNaturally(witherSkeleton.getLocation(), arrows);
+                        .log(Level.FINER, "[Events] Dropped {0} arrows from wither skeleton at x:{1}, y:{2}, z:{3} in world {4}", new Object[]{arrowsToDrop, witherSkeleton.getLocation().getX(), witherSkeleton.getLocation().getY(), witherSkeleton.getLocation().getZ(), witherSkeleton.getWorld().getName()});
+                this.dropArrows(witherSkeleton, arrowsToDrop);
             }
         }
+    }
+
+    /**
+     * Handles the entity damaged by entity event.
+     * @param event The event name.
+     * @since 1.0.1
+     */
+    @EventHandler
+    public void onWitherSkeletonDamaged(final @NotNull EntityDamageByEntityEvent event) {
+        // We won't handle the event if drop arrows is disabled or the entity killed was not a wither skeleton.
+        if (!this.configuration.dropArrows.value() || event.getEntity().getType() != EntityType.WITHER_SKELETON) {
+            return;
+        }
+
+        final @NotNull WitherSkeleton witherSkeleton = (WitherSkeleton)event.getEntity();
+        if (witherSkeleton.getHealth() > event.getFinalDamage()) {
+            // Skeleton isn't dead yet!
+            return;
+        }
+        final @NotNull EntityEquipment witherSkeletonEquipment = witherSkeleton.getEquipment();
+        // Do not process for wither skeletons not wielding a bow.
+        if (witherSkeletonEquipment.getItemInMainHand().getType() != Material.BOW) {
+           return;
+        }
+
+        int lootMultiplier = 1;
+        @Nullable Entity damager = event.getDamager();
+        if (damager instanceof final Projectile projectile) {
+            ProjectileSource source = projectile.getShooter();
+            if (source instanceof final Entity shootingEntity) {
+                damager = shootingEntity;
+            }
+        } else if (damager instanceof final TNTPrimed primedTNT) {
+            damager = primedTNT.getSource();
+        }
+
+        if (damager instanceof final LivingEntity livingEntity) {
+            final @Nullable EntityEquipment entityEquipment = livingEntity.getEquipment();
+            if (entityEquipment != null) {
+                lootMultiplier += Math.max(entityEquipment.getItemInMainHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS), entityEquipment.getItemInOffHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS));
+                int arrowsToDrop = (int)Math.floor(Math.random() * lootMultiplier);
+                if (arrowsToDrop > 0) {
+                    this.plugin.getLogger()
+                            .log(Level.FINER, "[Events] Dropped {0} arrows from wither skeleton at x:{1}, y:{2}, z:{3} in world {4} due to Looting", new Object[]{arrowsToDrop, witherSkeleton.getLocation().getX(), witherSkeleton.getLocation().getY(), witherSkeleton.getLocation().getZ(), witherSkeleton.getWorld().getName()});
+                    this.dropArrows(witherSkeleton, arrowsToDrop);
+                }
+            }
+        }
+    }
+
+    private void dropArrows(final @NotNull WitherSkeleton witherSkeleton, int count) {
+        final ItemStack arrows;
+        int duration = configuration.arrowsOfDecay.duration.value(witherSkeleton.getWorld().getDifficulty());
+        int effectLevel = configuration.arrowsOfDecay.effectLevel.value(witherSkeleton.getWorld().getDifficulty());
+
+        if (this.configuration.arrowsOfDecay.enabled.value() && duration > 0 && effectLevel >= 0) {
+            arrows = new ItemStack(Material.TIPPED_ARROW, count);
+            if (arrows.getItemMeta() instanceof final PotionMeta potionMeta) {
+                potionMeta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE));
+                potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.WITHER, duration, effectLevel), true);
+                potionMeta.setColor(Color.BLACK);
+                arrows.setItemMeta(potionMeta);
+            }
+        } else {
+            arrows = new ItemStack(Material.TIPPED_ARROW, count);
+        }
+        witherSkeleton.getWorld().dropItemNaturally(witherSkeleton.getLocation(), arrows);
     }
 }

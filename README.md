@@ -24,6 +24,10 @@ Be warned: Wither archers are not to be trifled with! Be careful when configurin
 
 The default configuration settings have been tuned to game difficulty, but feel free to experiment!
 
+### Metrics
+
+This mod uses bStats for usage metrics. To opt out of metrics data, set the "metrics" config entry in your configuration file to "false", or delete the line.
+
 ## Configuration
 
 The default configuration file is contained within the details below.
