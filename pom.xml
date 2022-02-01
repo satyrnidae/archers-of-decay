@@ -176,7 +176,7 @@
         <dependency>
             <groupId>dev.satyrn</groupId>
             <artifactId>papermc-api</artifactId>
-            <version>1.7.0</version>
+            <version>1.8.1</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
