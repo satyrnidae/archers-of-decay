@@ -66,5 +66,5 @@ dropArrows: true
 debug: false
 # Whether to send usage telemetry.
 # Uses bStats (https://bstats.org)
-# Defaults to false, initially set to true.
-metrics: true
+# Defaults to false.
+metrics: false
