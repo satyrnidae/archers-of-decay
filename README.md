@@ -2,8 +2,7 @@
 
 Adds Minecraft Dungeons-inspired wither skeleton archers to the nether! For PaperMC 1.18.1
 
-[![Maven](https://github.com/satyrnidae/archers-of-decay/actions/workflows/maven.yml/badge.svg)](https://github.com/satyrnidae/archers-of-decay/actions/workflows/maven.yml)
-[![Downloads](https://cf.way2muchnoise.eu/full_573202_downloads.svg)](https://dev.bukkit.org/projects/archers-of-decay)
+[![Maven](https://github.com/satyrnidae/archers-of-decay/actions/workflows/maven.yml/badge.svg)](https://github.com/satyrnidae/archers-of-decay/blob/main/res/Archers%20of%20Decay%20Title.png?raw=true)
 
 ## Introduction
 
@@ -26,7 +25,19 @@ The default configuration settings have been tuned to game difficulty, but feel 
 
 ### Metrics
 
-This mod uses bStats for usage metrics. To opt out of metrics data, set the "metrics" config entry in your configuration file to "false", or delete the line.
+**Only enable metrics if you are an adult, and willing to disclose this information.**
+
+This mod optionally uses bStats (https://bstats.org) for usage metrics. This functionality is disabled by default, but may be opted into by changing the "metrics" setting in the configuration file to "true".
+
+Data collected by these metrics include:
+- Minecraft version
+- Whether the server is set to Online mode
+- Player count
+- Server architecture (software, core count, operating system, processor architecture, java version)
+- Plugin configuration (version, locale, plugin-specific config settings)
+- Server country of origin (where the server is hosted)
+
+These metrics may be used to determine which features should be developed in the future. **Only enable metrics if you are an adult, and are willing to disclose this information.** Please read the [bStats privacy policy](https://bstats.org/privacy-policy) before opting in to metrics.
 
 ## Configuration
 
@@ -103,8 +114,8 @@ dropArrows: true
 debug: false
 # Whether to send usage telemetry.
 # Uses bStats (https://bstats.org)
-# Defaults to false, initially set to true.
-metrics: true
+# Defaults to false.
+metrics: false
 ```
 
 </details>
