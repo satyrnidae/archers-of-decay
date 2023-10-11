@@ -2,5 +2,6 @@ command.about=§a{0} v{1}§r by {2}.\nSpawn chance: §ee: {3}%, n: {4}%, h: {5}%
 command.about.arrows=Wither effect duration: §ee: {0} second(s), n: {1} second(s), h: {2} second(s)§r\nWither effect level: §ee:{3} n:{4} h:{5}§r
 command.about.player=§a{0} v{1}§r by {2}.\nSpawn chance: §e{3}: {4}%§r\nIntrinsic fire arrows? §e{5}§r\nDrop arrows? §e{6}§r\nArmor transfers to wither skeleton? §e{7}§r\nArrows of Decay enabled?: §e{8}§r
 command.about.player.arrows=Wither effect duration: §e{0}: {1} second(s)§r\nWither effect level: §e{2}: {3}§r
-command.reload=§aReloaded Archers of Decay configuration!§e{1}§r
+command.reload=§aReloaded {0} configuration!
 command.reload.deny=§cYou don't have permission to reload the plugin configuration files.§r
+command.about.dropArrows.witherTippedEnabled=true (wither-tipped)

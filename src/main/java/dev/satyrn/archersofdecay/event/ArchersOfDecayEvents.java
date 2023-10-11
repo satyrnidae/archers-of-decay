@@ -1,7 +1,7 @@
 package dev.satyrn.archersofdecay.event;
 
 import dev.satyrn.archersofdecay.configuration.Configuration;
-import dev.satyrn.papermc.api.util.v2.Cast;
+import dev.satyrn.papermc.api.util.v1.Cast;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -211,7 +211,7 @@ public class ArchersOfDecayEvents implements Listener {
         int duration = configuration.arrowsOfDecay.duration.value(witherSkeleton.getWorld().getDifficulty());
         int effectLevel = configuration.arrowsOfDecay.effectLevel.value(witherSkeleton.getWorld().getDifficulty());
 
-        if (this.configuration.arrowsOfDecay.enabled.value() && duration > 0 && effectLevel >= 0) {
+        if (this.configuration.dropArrows.dropTippedArrows.value() && duration > 0 && effectLevel >= 0) {
             arrows = new ItemStack(Material.TIPPED_ARROW, count);
             if (arrows.getItemMeta() instanceof final PotionMeta potionMeta) {
                 potionMeta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE));

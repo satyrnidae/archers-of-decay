@@ -58,7 +58,7 @@ public final class ArchersOfDecayCommand extends CommandHandler {
                 if (instance != null) {
                     instance.setLocale(this.configuration.locale.value());
                 }
-                sender.sendMessage(I18n.tr("command.reload"));
+                sender.sendMessage(I18n.tr("command.reload", this.getPlugin().getDescription().getFullName()));
             } else {
                 sender.sendMessage(I18n.tr("command.reload.deny"));
             }
@@ -77,10 +77,10 @@ public final class ArchersOfDecayCommand extends CommandHandler {
                         difficultyPrefix,
                         this.configuration.spawnChances.value(difficulty) * 100,
                         this.configuration.flamingArrows.value(),
-                        this.configuration.dropArrows.value(),
+                        this.configuration.dropArrows.value() ? (this.configuration.dropArrows.dropTippedArrows.value() ? I18n.tr("command.about.dropArrows.witherTippedEnabled") : "true") : "false",
                         this.configuration.transferArmor.value(),
-                        this.configuration.arrowsOfDecay.enabled.value()));
-                if (this.configuration.arrowsOfDecay.enabled.value()) {
+                        this.configuration.arrowsOfDecay.value()));
+                if (this.configuration.arrowsOfDecay.value()) {
                     aboutMessage.append('\n').append(I18n.tr("command.about.player.arrows",
                             difficultyPrefix,
                             this.configuration.arrowsOfDecay.duration.value(difficulty) / 20F,
@@ -96,10 +96,10 @@ public final class ArchersOfDecayCommand extends CommandHandler {
                         this.configuration.spawnChances.value(Difficulty.NORMAL) * 100,
                         this.configuration.spawnChances.value(Difficulty.HARD) * 100,
                         this.configuration.flamingArrows.value(),
-                        this.configuration.dropArrows.value(),
+                        this.configuration.dropArrows.value() ? (this.configuration.dropArrows.dropTippedArrows.value() ? I18n.tr("command.about.dropArrows.witherTippedEnabled") : "true") : "false",
                         this.configuration.transferArmor.value(),
-                        this.configuration.arrowsOfDecay.enabled.value()));
-                if (this.configuration.arrowsOfDecay.enabled.value()) {
+                        this.configuration.arrowsOfDecay.value()));
+                if (this.configuration.arrowsOfDecay.value()) {
                     aboutMessage.append('\n').append(I18n.tr("command.about.arrows",
                             this.configuration.arrowsOfDecay.duration.value(Difficulty.EASY) / 20F,
                             this.configuration.arrowsOfDecay.duration.value(Difficulty.NORMAL) / 20F,

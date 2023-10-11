@@ -19,8 +19,13 @@ import java.util.logging.Level;
  */
 @SuppressWarnings("unused")
 public final class ArchersOfDecay extends JavaPlugin {
+    // Service ID for metrics
+    private static final int METRICS_ID = 20029;
+
     // The internationalization instance for the plugin.
     private I18n i18n;
+    // The configuration instance.
+    private Configuration configuration;
 
     /**
      * Called when the plugin is loaded.
@@ -44,17 +49,21 @@ public final class ArchersOfDecay extends JavaPlugin {
         this.i18n = new I18n(this, "lang");
         this.i18n.enable();
 
-        final Configuration configuration = new Configuration(this);
+        configuration = new Configuration(this);
         if (configuration.debug.value()) {
             this.getLogger().setLevel(Level.ALL);
+            this.getLogger().log(Level.INFO, "Debug messages enabled!");
         }
+        configuration.upgrade();
+
         if (configuration.metrics.value()) {
-            final Metrics metrics = new Metrics(this, 14055);
+            // Updated v1.0.3: Invalidated old Metrics link so only servers which have explicitly opted-in have data.
+            final Metrics metrics = new Metrics(this, METRICS_ID);
             metrics.addCustomChart(new SimplePie("locale", configuration.locale::value));
-            metrics.addCustomChart(new SimplePie("wither_skeletons_fire_flaming_arrows", configuration.flamingArrows.value()::toString));
-            metrics.addCustomChart(new SimplePie("transfer_armor_to_wither_skeleton", configuration.transferArmor.value()::toString));
-            metrics.addCustomChart(new SimplePie("arrows_of_decay_enabled", configuration.arrowsOfDecay.enabled.value()::toString));
-            metrics.addCustomChart(new SimplePie("wither_archers_drop_arrows", configuration.dropArrows.value()::toString));
+            metrics.addCustomChart(new SimplePie("flaming_arrows", configuration.flamingArrows.value()::toString));
+            metrics.addCustomChart(new SimplePie("transfer_armor", configuration.transferArmor.value()::toString));
+            metrics.addCustomChart(new SimplePie("arrows_of_decay_enabled", configuration.arrowsOfDecay.value()::toString));
+            metrics.addCustomChart(new SimplePie("drop_arrows", configuration.dropArrows.value()::toString));
         }
         this.i18n.setLocale(configuration.locale.value());
         this.registerEvents(configuration);
@@ -71,6 +80,11 @@ public final class ArchersOfDecay extends JavaPlugin {
     @Override
     public void onDisable() {
         this.getLogger().log(Level.INFO, "Disabling Archers of Decay!");
+        if (configuration != null) {
+            configuration.save();
+        } else {
+            saveConfig();
+        }
         this.i18n.disable();
     }
 
