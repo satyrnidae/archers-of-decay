@@ -46,6 +46,8 @@ The default configuration file is contained within the details below.
 <details>
 
 ```yaml
+# Don't touch this.
+_version: 1
 # The locale to use while translating chat messages.
 # Default value: en_US.
 locale: "en_US"
@@ -105,16 +107,27 @@ arrowsOfDecay:
     # Defaults to 1.
     # Valid values are whole numbers from -1 to 255. When set to -1, the effect will not be applied.
     hard: 1
-# Whether to drop arrows if a wither skeleton has a bow.
-# Will drop as "Uncraftable Tipped Arrow" with a wither effect if arrows of decay are enabled.
-# Defaults to true.
-dropArrows: true
+# Whether Wither Skeleton archers should drop arrows on death.
+# Set "dropArrows.enabled" to true to enable this functionality.
+dropArrows:
+  # Whether to drop arrows if a wither skeleton has a bow.
+  # Will drop as "Uncraftable Tipped Arrow" with a wither effect if arrows of decay are enabled.
+  # Defaults to true.
+  enabled: true
+  # Whether the arrows which are dropped should be normal or tipped with the Wither effect.
+  # Wither effect levels depend on difficulty.
+  # Ignored if dropArrows is not enabled, effect level is set to a negative value, or effect duration is set to 0.
+  # Defaults to false, initially set to true.
+  dropTippedArrows: true
 # Whether to show debug output in the console.
 # Defaults to false.
 debug: false
-# Whether to send usage telemetry.
-# Uses bStats (https://bstats.org)
+# Whether to send usage telemetry. Uses bStats (https://bstats.org).
 # Defaults to false.
+# Only opt in to metrics if you are an adult, and are comfortable sharing non-identifying data with bStats.
+# See the GitHub readme at https://github.com/satyrnidae/archers-of-decay for more info on metrics.
+# You can also see what metrics are collected on the bStats metrics page here: https://bstats.org/plugin/bukkit/Archers%20of%20Decay/20029
+# Please make sure you've read the bStats privacy policy at https://bstats.org/privacy-policy before enabling!
 metrics: false
 ```
 
